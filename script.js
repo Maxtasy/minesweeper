@@ -1,11 +1,20 @@
-const gameContainer = document.querySelector(".game-container");
-const newgameButtom = document.querySelector(".new-game-button");
+const gridContainer = document.querySelector(".grid-container");
+const newGameButton = document.querySelector(".new-game-button");
+const mineCounter = document.querySelector(".mine-counter");
+const timer = document.querySelector(".timer");
 
 const COLS = 50;
 const ROWS = 25;
 const CELL_SIZE = 20;
 const MINES = [];
 const MINES_COUNT = 200;
+
+let game;
+
+function convertNumber(num) {
+    const padding = 3 - num.toString().length;
+    return `${"0".repeat(padding)}${num.toString()}`
+}
 
 function pickRandomCells() {
     for (let i = 0; i < MINES_COUNT; i++) {
@@ -36,7 +45,7 @@ function getMineCount(x, y) {
 }
 
 function buildGrid() {
-    gameContainer.innerHTML = "";
+    gridContainer.innerHTML = "";
 
     for (let y = 0; y < ROWS; y++) {
         for (let x = 0; x < COLS; x++) {
@@ -48,13 +57,12 @@ function buildGrid() {
 
             if (MINES.some(mine => mine[0] === x && mine[1] === y)) {
                 cell.setAttribute("data-mine", true);
-                // cell.textContent = "💣";
             } else {
                 const mineCount = getMineCount(x, y);
                 if (mineCount) cell.setAttribute("data-minecount", mineCount);
             }
 
-            gameContainer.appendChild(cell);
+            gridContainer.appendChild(cell);
         }
     }
 
@@ -74,6 +82,8 @@ function revealMines() {
         cell.textContent = "💣";
         cell.classList.add("revealed");
     });
+    
+    newGameButton.textContent = "😵";
 }
 
 function revealCell(cell) {
@@ -83,8 +93,9 @@ function revealCell(cell) {
     if (!cell.dataset.mine && !cell.dataset.minecount) {
         revealSurroundingCells(cell);
     } else if (cell.dataset.mine) {
+        cell.classList.add("exploded");
         revealMines();
-        console.log("game over")
+        clearInterval(game);
     }
 }
 
@@ -92,9 +103,11 @@ function toggleFlag(cell) {
     if (cell.dataset.flagged == "true") {
         cell.textContent = "";
         cell.setAttribute("data-flagged", false);
+        mineCounter.textContent = convertNumber(parseInt(mineCounter.textContent) + 1);
     } else if (cell.dataset.flagged == "false") {
         cell.textContent = "🚩";
         cell.setAttribute("data-flagged", true);
+        mineCounter.textContent = convertNumber(parseInt(mineCounter.textContent) - 1);
     }
 }
 
@@ -115,12 +128,21 @@ function revealSurroundingCells(cell) {
 
 function newGame() {
     MINES.length = 0;
+    newGameButton.textContent = "🙂";
+    mineCounter.textContent = MINES_COUNT;
+    timer.textContent = "000";
     pickRandomCells();
     buildGrid();
+    clearInterval(game);
+    game = setInterval(incrementTimer, 1000);
+}
+
+function incrementTimer() {
+    timer.textContent = convertNumber(parseInt(timer.textContent) + 1);
 }
 
 document.addEventListener('contextmenu', e => e.preventDefault());
 
-newgameButtom.addEventListener("click", newGame);
+newGameButton.addEventListener("click", newGame);
 
 newGame();
