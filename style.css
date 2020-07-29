@@ -1,0 +1,79 @@
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #0D0D0D;
+}
+
+.game-container {
+    width: 1000px;
+    height: 500px;
+    background-color: black;
+    display: grid;
+    grid-template-columns: repeat(50, 1fr);
+    grid-template-rows: repeat(25, 1fr);
+}
+
+.cell {
+    font-family: Arial, Helvetica, sans-serif;
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+    background-color: #c4bebf;
+    border-top: 2px solid #fbfffe;
+    border-left: 2px solid #fbfffe;
+    border-right: 2px solid #8e848d;
+    border-bottom: 2px solid #8e848d;
+    font-size: 15px;
+    line-height: 20px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.cell.revealed {
+    border: 1px solid #828282;
+    background-color: #c1c1c1;
+}
+
+[data-mine = true] {
+    font-size: 12px;
+}
+
+[data-minecount = "1"] {
+    color: #0200fd;
+}
+
+[data-minecount = "2"] {
+    color: #017e00;
+}
+
+[data-minecount = "3"] {
+    color: #ff0000;
+}
+
+[data-minecount = "4"] {
+    color: #010180;
+}
+
+[data-minecount = "5"] {
+    color: #810101;
+}
+
+[data-minecount = "6"] {
+    color: #008080;
+}
+
+[data-minecount = "7"] {
+    color: #000000;
+}
+
+[data-minecount = "8"] {
+    color: #808080;
+}
