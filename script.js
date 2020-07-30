@@ -9,7 +9,9 @@ const CELL_SIZE = 20;
 const MINES = [];
 const MINES_COUNT = 200;
 
-let game;
+let timerRunning = false;
+let correctFlags = 0;
+let gameOver = false;
 
 function convertNumber(num) {
     const padding = 3 - num.toString().length;
@@ -68,10 +70,35 @@ function buildGrid() {
 
     document.querySelectorAll(".cell").forEach(cell => {
         cell.addEventListener("mouseup", (e) => {
+            if (gameOver) return;
             if (e.button === 2 && !e.target.classList.contains("revealed")) {
                 toggleFlag(e.target);
-            } else if (e.button === 0 && e.target.dataset.flagged === "false") {
+            } else if (e.button === 0 && e.target.dataset.flagged === "false" && !e.target.classList.contains("revealed")) {
                 revealCell(e.target);
+                if (!timerRunning) {
+                    timerRunning = true;
+                }
+            }
+        });
+
+        cell.addEventListener("mousedown", (e) => {
+            if (gameOver) return;
+            if (e.button === 0 && e.target.dataset.flagged === "false" && !e.target.classList.contains("revealed")) {
+                e.target.classList.add("pressed");
+            }
+        });
+
+        cell.addEventListener("mouseleave", (e) => {
+            if (gameOver) return;
+            if (e.target.dataset.flagged === "false" && e.target.classList.contains("pressed")) {
+                e.target.classList.remove("pressed");
+            }
+        });
+
+        cell.addEventListener("mouseenter", (e) => {
+            if (gameOver) return;
+            if (e.buttons === 1 && e.target.dataset.flagged === "false") {
+                e.target.classList.add("pressed");
             }
         });
     });
@@ -79,8 +106,16 @@ function buildGrid() {
 
 function revealMines() {
     document.querySelectorAll("[data-mine=true]").forEach(cell => {
+        if (cell.dataset.flagged === "true" && cell.dataset.mine) return;
         cell.textContent = "💣";
         cell.classList.add("revealed");
+    });
+    
+    document.querySelectorAll("[data-flagged=true]").forEach(cell => {
+        if (cell.dataset.flagged === "true" && !cell.dataset.mine) {
+            cell.textContent = "💩";  
+            cell.classList.add("revealed");
+        }
     });
     
     newGameButton.textContent = "😵";
@@ -94,8 +129,9 @@ function revealCell(cell) {
         revealSurroundingCells(cell);
     } else if (cell.dataset.mine) {
         cell.classList.add("exploded");
+        console.log("You lost!")
+        gameOver = true;
         revealMines();
-        clearInterval(game);
     }
 }
 
@@ -104,10 +140,17 @@ function toggleFlag(cell) {
         cell.textContent = "";
         cell.setAttribute("data-flagged", false);
         mineCounter.textContent = convertNumber(parseInt(mineCounter.textContent) + 1);
+        if (cell.dataset.mine) correctFlags--;
     } else if (cell.dataset.flagged == "false") {
+        if (parseInt(mineCounter.textContent) <= 0) return;
         cell.textContent = "🚩";
         cell.setAttribute("data-flagged", true);
         mineCounter.textContent = convertNumber(parseInt(mineCounter.textContent) - 1);
+        if (cell.dataset.mine) correctFlags++;
+        if (correctFlags === MINES_COUNT) {
+            newGameButton.textContent = "😎";
+            gameOver = true;
+        }
     }
 }
 
@@ -128,17 +171,22 @@ function revealSurroundingCells(cell) {
 
 function newGame() {
     MINES.length = 0;
+    correctFlags = 0;
+    gameOver = false;
+    timerRunning = false;
     newGameButton.textContent = "🙂";
-    mineCounter.textContent = MINES_COUNT;
+    mineCounter.textContent = convertNumber(MINES_COUNT);
     timer.textContent = "000";
     pickRandomCells();
     buildGrid();
-    clearInterval(game);
-    game = setInterval(incrementTimer, 1000);
 }
 
-function incrementTimer() {
-    timer.textContent = convertNumber(parseInt(timer.textContent) + 1);
+function timeCounter() {
+    // console.log("updating timer", !gameOver, timerRunning)
+    if (!gameOver && timerRunning) {
+        timer.textContent = convertNumber(parseInt(timer.textContent) + 1);
+    }
+    setTimeout(timeCounter, 1000);
 }
 
 document.addEventListener('contextmenu', e => e.preventDefault());
@@ -146,3 +194,4 @@ document.addEventListener('contextmenu', e => e.preventDefault());
 newGameButton.addEventListener("click", newGame);
 
 newGame();
+timeCounter();

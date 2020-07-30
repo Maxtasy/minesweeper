@@ -2,6 +2,12 @@
     box-sizing: border-box;
 }
 
+:root {
+    --color-background: #c1c1c1;
+    --color-relief-bright: #ffffff;
+    --color-relief-dark: #8e848d;
+}
+
 body {
     margin: 0;
     min-height: 100vh;
@@ -12,13 +18,31 @@ body {
     background-color: #0D0D0D;
 }
 
+.game-container {
+    padding: 20px;
+    background-color: var(--color-background);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    border-top: 2px solid var(--color-relief-bright);
+    border-left: 2px solid var(--color-relief-bright);
+    border-right: 2px solid var(--color-relief-dark);
+    border-bottom: 2px solid var(--color-relief-dark);
+}
+
 .status-bar {
-    font-family: 'Orbitron', sans-serif;
+    font-family: 'Share Tech Mono', monospace;
     width: 1000px;
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #b3b3b3;
+    background-color: var(--color-background);
+    border-top: 2px solid var(--color-relief-dark);
+    border-left: 2px solid var(--color-relief-dark);
+    border-right: 2px solid var(--color-relief-bright);
+    border-bottom: 2px solid var(--color-relief-bright);
 }
 
 .mine-counter {
@@ -27,8 +51,7 @@ body {
     font-size: 50px;
     color: #ff0000;
     background: black;
-    text-align: center;
-    width: 150px;
+    padding: 0 5px;
 }
 
 .new-game-button {
@@ -41,17 +64,20 @@ body {
     font-size: 50px;
     color: #ff0000;
     background: black;
-    padding: 2px;
-    text-align: center;
-    width: 150px;
+    padding: 0 5px;
 }
 
 .grid-container {
+    box-sizing: initial;
     width: 1000px;
     height: 500px;
     display: grid;
     grid-template-columns: repeat(50, 1fr);
     grid-template-rows: repeat(25, 1fr);
+    border-top: 2px solid var(--color-relief-dark);
+    border-left: 2px solid var(--color-relief-dark);
+    border-right: 2px solid var(--color-relief-bright);
+    border-bottom: 2px solid var(--color-relief-bright);
 }
 
 .cell {
@@ -59,21 +85,31 @@ body {
     cursor: pointer;
     width: 20px;
     height: 20px;
-    background-color: #c4bebf;
-    border-top: 2px solid #fbfffe;
-    border-left: 2px solid #fbfffe;
-    border-right: 2px solid #8e848d;
-    border-bottom: 2px solid #8e848d;
+    background-color: var(--color-background);
+    border-top: 2px solid var(--color-relief-bright);
+    border-left: 2px solid var(--color-relief-bright);
+    border-right: 2px solid var(--color-relief-dark);
+    border-bottom: 2px solid var(--color-relief-dark);
     font-size: 15px;
     line-height: 20px;
     font-weight: bold;
     text-align: center;
     position: relative;
+    user-select: none;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -o-user-select: none;
 }
 
 .cell.revealed {
     border: 1px solid #828282;
-    background-color: #c1c1c1;
+    background-color: var(--color-background);
+}
+
+.cell.pressed {
+    border: 1px solid #828282;
+    background-color: var(--color-background);
 }
 
 .cell.revealed.exploded {
